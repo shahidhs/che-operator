@@ -9,13 +9,27 @@
 #  Contributors:
 #    Red Hat, Inc. - initial API and implementation
 name: Docker
-on: [pull_request, push]
+#on: [pull_request, push]
+on:
+  push:
+    branches: multiarch_support
 jobs:
 
   build:
     name: Build
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
-    - name: Build the Docker image
-      run: docker build .
+      - name: checkout code
+        uses: actions/checkout@v2
+      - name: install buildx
+        id: buildx
+        uses: crazy-max/ghaction-docker-buildx@v1
+        with:
+          version: latest
+      - name: login to docker hub
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+      - name: build the Docker multi-arch image
+        run: |
+          docker buildx build --push \
+          --tag shahid1984/march-cheop:latest \
+          --platform linux/amd64,linux/s390x .
