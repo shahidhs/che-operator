@@ -13,6 +13,8 @@ name: Docker
 on:
   push:
     branches: multiarch_support
+  pull_request:
+    branches: multiarch_support
 jobs:
 
   build:
